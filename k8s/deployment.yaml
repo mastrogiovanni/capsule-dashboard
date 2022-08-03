@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capsule-dashboard-deployment
+  labels:
+    app: capsule-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capsule-dashboard
+  template:
+    metadata:
+      labels:
+        app: capsule-dashboard
+    spec:
+      containers:
+      - name: capsule-dashboard
+        image: mastrogiovanni/capsule-dashboard:0.0.1
+        env:
+        - name: IN_CLUSTER
+          value: "true"
+        ports:
+        - containerPort: 5173

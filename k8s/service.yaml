@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: capsule-dashboard-service
+spec:
+  selector:
+    app.kubernetes.io/name: CapsuleDashboard
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5173
