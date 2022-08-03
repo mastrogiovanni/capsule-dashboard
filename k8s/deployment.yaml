@@ -16,6 +16,7 @@ spec:
     spec:
       containers:
       - name: capsule-dashboard
+        imagePullPolicy: Always
         image: mastrogiovanni/capsule-dashboard:0.0.1
         env:
         - name: IN_CLUSTER

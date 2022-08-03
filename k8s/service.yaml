@@ -4,7 +4,7 @@ metadata:
   name: capsule-dashboard-service
 spec:
   selector:
-    app.kubernetes.io/name: CapsuleDashboard
+    app: capsule-dashboard
   ports:
     - protocol: TCP
       port: 80
