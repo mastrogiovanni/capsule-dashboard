@@ -14,6 +14,7 @@ spec:
       labels:
         app: capsule-dashboard
     spec:
+      serviceAccountName: capsule-dashboard
       containers:
       - name: capsule-dashboard
         imagePullPolicy: Always
