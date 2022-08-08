@@ -11,15 +11,12 @@ async function main() {
         kc.loadFromDefault();
     }
 
-    const k8sApiMC = kc.makeApiClient(k8s.CustomObjectsApi);
+    const k8sApiMC = kc.makeApiClient(k8s.ApiextensionsV1Api);
+    // const k8sApiMC = kc.makeApiClient(k8s.CustomObjectsApi);
 
-    const result = await k8sApiMC.listClusterCustomObject(
-        "capsule.clastix.io",
-        "v1beta1",
-        "tenants"
-    );
+    const result = await k8sApiMC.listCustomResourceDefinition()
 
-    console.log((result?.body as any)?.items);
+    console.log(result?.body['items'].filter(item => item.spec.group === 'kyverno.io').map(item => item.metadata?.name));
 
 }
 

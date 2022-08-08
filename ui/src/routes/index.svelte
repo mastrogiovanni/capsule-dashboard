@@ -1,19 +1,21 @@
 <script type="ts">
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-import Policy from './Policy.svelte';
+	import Policy from './Policy.svelte';
+	import { io } from "$lib/realtime";
 
 	onMount(async () => {
 		const result = await fetch('/tenants');
 		const body = await result.json();
 		tenants = body.tenants;
 		console.log(body);
+		io.emit("message", "stocazzo");
 	});
 
 	let tenants: any[] = [];
 
-	function parseOwners(tenant) {
-		return tenant.spec.owners.map((item) => `${item.name} (${item.kind})`).join(', ');
+	function parseOwners(tenant: any) {
+		return tenant.spec.owners.map((item: any) => `${item.name} (${item.kind})`).join(', ');
 	}
 
 	let creating = false;
@@ -38,11 +40,11 @@ import Policy from './Policy.svelte';
 
 <header class="d-flex justify-content-center py-3">
 	<ul class="nav nav-pills">
-		<li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
-		<li class="nav-item"><a href="#" class="nav-link">Features</a></li>
-		<li class="nav-item"><a href="#" class="nav-link">Pricing</a></li>
-		<li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
-		<li class="nav-item"><a href="#" class="nav-link">About</a></li>
+		<li class="nav-item"><a href="#!" class="nav-link active" aria-current="page">Home</a></li>
+		<li class="nav-item"><a href="#!" class="nav-link">Features</a></li>
+		<li class="nav-item"><a href="#!" class="nav-link">Pricing</a></li>
+		<li class="nav-item"><a href="#!" class="nav-link">FAQs</a></li>
+		<li class="nav-item"><a href="#!" class="nav-link">About</a></li>
 	</ul>
 </header>
 

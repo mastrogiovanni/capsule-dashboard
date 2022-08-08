@@ -32,6 +32,10 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@kubernetes/client-node": "^0.17.0"
+		"@kubernetes/client-node": "^0.17.0",
+		"@sveltejs/adapter-node": "^1.0.0-next.85",
+		"socket.io": "^4.5.1",
+		"socket.io-client": "^4.5.1",
+		"ts-node": "^10.9.1"
 	}
 }
