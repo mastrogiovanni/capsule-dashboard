@@ -2,14 +2,25 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import Policy from './Policy.svelte';
-	import { io } from "$lib/realtime";
+	import { io } from "socket.io-client";
 
-	onMount(async () => {
+	async function reloadTenants() {
 		const result = await fetch('/tenants');
 		const body = await result.json();
 		tenants = body.tenants;
-		console.log(body);
-		io.emit("message", "stocazzo");
+		// console.log(body);
+	}
+
+	onMount(async () => {
+		const socket = io()
+		socket.on("connect", () => {
+			console.log("Connected")
+			socket.on('refresh', async (msg) => {
+    			console.log('force refresh', msg);
+				await reloadTenants()
+  			});
+		})
+		await reloadTenants()
 	});
 
 	let tenants: any[] = [];

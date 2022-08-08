@@ -44,21 +44,26 @@ export async function configureServer(server) {
             if (type === 'ADDED') {
                 // tslint:disable-next-line:no-console
                 console.log('new object:');
+                io.sockets.emit("refresh")
             } else if (type === 'MODIFIED') {
                 // tslint:disable-next-line:no-console
                 console.log('changed object:');
+                io.sockets.emit("refresh")
             } else if (type === 'DELETED') {
                 // tslint:disable-next-line:no-console
                 console.log('deleted object:');
+                io.sockets.emit("refresh")
             } else if (type === 'BOOKMARK') {
                 // tslint:disable-next-line:no-console
                 console.log(`bookmark: ${watchObj.metadata.resourceVersion}`);
+                io.sockets.emit("refresh")
             } else {
                 // tslint:disable-next-line:no-console
                 console.log('unknown type: ' + type);
+                io.sockets.emit("refresh")
             }
             // tslint:disable-next-line:no-console
-            console.log("API POBJ", apiObj, type, watchObj);
+            // console.log("API POBJ", apiObj, type, watchObj);
         },
         // done callback is called if the watch terminates normally
         (err) => {
