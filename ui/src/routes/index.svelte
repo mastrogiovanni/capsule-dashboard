@@ -3,34 +3,35 @@
 	import { slide } from 'svelte/transition';
 	import Policy from './Policy.svelte';
 	import { io } from "socket.io-client";
+	import { deleteTenant, createTenant, getTenants, type Tenant } from '$lib/tenants';
+	import { parseOwners } from '$lib/utils';
 
-	async function reloadTenants() {
-		const result = await fetch('/tenants');
-		const body = await result.json();
-		tenants = body.tenants;
-		// console.log(body);
+	let creating = false;
+	let tenants: any[] = [];
+	let includePolicies = false;
+	let name = ""
+	let owners = ""
+
+	async function reloadTenantTable() {
+		tenants = await getTenants()
 	}
 
 	onMount(async () => {
 		const socket = io()
 		socket.on("connect", () => {
-			console.log("Connected")
-			socket.on('refresh', async (msg) => {
-    			console.log('force refresh', msg);
-				await reloadTenants()
+			// refresh list on each refresh request
+			socket.on('refresh', async () => {
+				await reloadTenantTable();
   			});
 		})
-		await reloadTenants()
+		// refresh on first start
+		await reloadTenantTable();
 	});
 
-	let tenants: any[] = [];
-
-	function parseOwners(tenant: any) {
-		return tenant.spec.owners.map((item: any) => `${item.name} (${item.kind})`).join(', ');
+	async function _deleteTenant(name: string) {
+		await deleteTenant(name);
+		await reloadTenantTable();
 	}
-
-	let creating = false;
-	let includePolicies = false;
 
 	function startCreate() {
 		creating = true;
@@ -42,10 +43,11 @@
 		includePolicies = false;
 	}
 
-	function saveCreate() {
+	async function saveCreate() {
 		creating = false;
 		includePolicies = false;
-		// todo
+		await createTenant(name, owners.split(",").map(item => item.trim()))
+		await reloadTenantTable();
 	}
 </script>
 
@@ -64,14 +66,14 @@
 		<form transition:slide|local>
 			<div class="mb-3">
 				<label for="owner" class="form-label">Owners</label>
-				<input type="text" class="form-control" id="owner" aria-describedby="ownerHelp" />
+				<input bind:value={owners} type="text" class="form-control" id="owner" aria-describedby="ownerHelp" />
 				<div id="ownerHelp" class="form-text">
 					Write comma separated list of owners (alice, bob...)
 				</div>
 			</div>
 			<div class="mb-3">
 				<label for="namespace" class="form-label">Namespace</label>
-				<input type="text" class="form-control" id="namespace" />
+				<input bind:value={name} type="text" class="form-control" id="namespace" />
 			</div>
 			<div class="mb-3 form-check">
 				<input
@@ -91,12 +93,12 @@
 					</div>
 				</div>
 			{/if}
-			<button type="submit" class="btn btn-primary" on:click={saveCreate}>Save</button>
-			<button type="submit" class="btn btn-primary" on:click={cancelCreate}>Cancel</button>
+			<button type="button" class="btn btn-primary" on:click={saveCreate}>Save</button>
+			<button type="button" class="btn btn-primary" on:click={cancelCreate}>Cancel</button>
 		</form>
 	{:else}
 		<form>
-			<button type="submit" class="btn btn-primary" on:click={startCreate}>Create</button>
+			<button type="button" class="btn btn-primary" on:click={startCreate}>Create</button>
 		</form>
 	{/if}
 </div>
@@ -107,21 +109,20 @@
 			<th scope="col">#</th>
 			<th scope="col">Name</th>
 			<th scope="col">Owners</th>
+			<th scope="col"></th>
 		</tr>
 	</thead>
 	<tbody>
 		{#each tenants as tenant}
 			<tr>
-				<th scope="row">1</th>
+				<th scope="row">{tenant?.metadata?.uid.slice(24)}</th>
 				<td>{tenant?.metadata?.name}</td>
 				<td>{parseOwners(tenant)}</td>
+				<td>
+					<button on:click={() => _deleteTenant(tenant?.metadata?.name)} type="button" class="btn btn-sm btn-labeled btn-danger">
+						<span class="btn-label"><i class="fa fa-remove"></i></span>Cancel</button>
+				</td>
 			</tr>
 		{/each}
 	</tbody>
 </table>
-
-<style>
-	body {
-		background-color: gainsboro;
-	}
-</style>

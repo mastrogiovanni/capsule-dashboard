@@ -2,10 +2,16 @@
 
 This is a PoC for a [Capsule](https://github.com/clastix/capsule) dashboard.
 
+# Run minikube
+
+```
+minikube start --nodes 1 --memory 24576 --cpus 6
+```
+
 # Install Capsule
 
 ```
-helm install capsule clastix/capsule -n capsule-system --create-namespace
+helm install capsule clastix/capsule -n capsule-system --create-namespace --set manager.resources=null
 ```
 
 Create a tenant:
